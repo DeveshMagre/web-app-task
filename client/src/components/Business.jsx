@@ -1,100 +1,189 @@
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-const Business = () => {
-  const [businesses, setBusinesses] = useState([
-    {
-      id: '#PRI283737',
-      name: 'AMBUJA NEOTIA',
-      address: 'Newtown Sector IV',
-      gstNo: '19CRLPP793',
-      startDate: '12-07-2024',
-      renewalDate: '11-07-2025',
-      amc: 'YES',
-      status: true, // Use boolean for status
-    },
-  ]);
+import { useBusiness } from '../context/BusinessContext'; // Import context
+import { CheckCircle, Cancel } from '@mui/icons-material'; // Import Material icons
 
-  const [codeWordNotes, setCodeWordNotes] = useState([
-    "1 - Gold",
-    "2 - Silver",
-    "3 - Bronze",
-    "A - Available"
-  ])
+const Business = () => {
+  const {
+    filteredBusinesses,
+    setNameSearchTerm,
+    setPhoneSearchTerm,
+    setGstSearchTerm,
+    filterBusinesses,
+  } = useBusiness(); // Fetch filtered businesses and setSearchTerm from context
+
+  const [startDateFilter, setStartDateFilter] = useState('');
+  const [endDateFilter, setEndDateFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
   const navigate = useNavigate();
+
+  const handleRowClick = (business) => {
+    navigate(`/dashboard/${business.id}`, { state: { business } });
+  };
+
   const handleNewBusinessClick = () => {
     navigate('/multi-step-form');
   };
 
-  return (
-    <div className="bg-white p-8 rounded-lg shadow-md w-full"> {/* Added container for better styling */}
-      {/* Header */}
-      
+  // Trigger filtering whenever search terms or filters change
+  useEffect(() => {
+    filterBusinesses();
+  }, [setNameSearchTerm, setPhoneSearchTerm, setGstSearchTerm, startDateFilter, endDateFilter, statusFilter]);
 
-      {/* Search and Filters */}
-      <div className="flex space-x-4 mb-4">
-        <input type="text" placeholder="Search by phone" className="border border-gray-300 rounded px-3 py-2 w-1/4" />
-        <input type="text" placeholder="Search by GST" className="border border-gray-300 rounded px-3 py-2 w-1/4" />
-        <input type="text" placeholder="Search by business" className="border border-gray-300 rounded px-3 py-2 w-1/4" />
-        <button className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded">date filters</button>
-        <button className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded">Status</button>
-        <button className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded">download</button>
-        <button className="bg-pink-500 hover:bg-pink-600 text-black px-3 py-2 rounded" onClick={handleNewBusinessClick}>NEW BUSINESS</button>
+  // Function to handle filtering businesses by start date, end date, and status
+  const handleFilterChange = () => {
+    const filtered = filteredBusinesses.filter((business) => {
+      const matchesStartDate =
+        !startDateFilter || new Date(business.startDate) >= new Date(startDateFilter);
+      const matchesEndDate =
+        !endDateFilter || new Date(business.renewalDate) <= new Date(endDateFilter);
+      const matchesStatus = !statusFilter || business.status === statusFilter;
+
+      return matchesStartDate && matchesEndDate && matchesStatus;
+    });
+
+    return filtered;
+  };
+
+  // Function to convert filtered businesses to CSV format
+  const downloadCSV = () => {
+    const headers = ['ID', 'Business Name', 'Address', 'GST No', 'Start Date', 'Renewal Date', 'AMC', 'Status'];
+    const rows = filteredBusinesses.map((business) => [
+      business.id,
+      business.businessName,
+      business.address,
+      business.gstNo,
+      business.startDate,
+      business.renewalDate,
+      business.amc,
+      business.status,
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map((row) => row.join(',')),
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'businesses.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
+    <div className="bg-white p-8 rounded-lg shadow-md w-full">
+      <div className="flex items-center space-x-4 mb-4">
+        <input
+          type="text"
+          placeholder="Search by name"
+          className="border border-gray-300 rounded px-3 py-2 w-1/4"
+          onChange={(e) => setNameSearchTerm(e.target.value)} // Update name search term
+        />
+
+        <input
+          type="text"
+          placeholder="Search by phone"
+          className="border border-gray-300 rounded px-3 py-2 w-1/4"
+          onChange={(e) => setPhoneSearchTerm(e.target.value)} // Update phone search term
+        />
+        <input
+          type="text"
+          placeholder="Search by GST"
+          className="border border-gray-300 rounded px-3 py-2 w-1/4"
+          onChange={(e) => setGstSearchTerm(e.target.value)} // Update GST search term
+        />
+
+        <input
+          type="date"
+          className="border border-gray-300 rounded px-3 py-2"
+          value={startDateFilter}
+          onChange={(e) => setStartDateFilter(e.target.value)} 
+        />
+
+        <input
+          type="date"
+          className="border border-gray-300 rounded px-3 py-2"
+          value={endDateFilter}
+          onChange={(e) => setEndDateFilter(e.target.value)} // Update end date filter
+        />
+
+        <select
+          className="border border-gray-300 rounded px-3 py-2"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)} // Update status filter
+        >
+          <option value="">All Status</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+
+        <button
+          className="bg-blue-500 hover:bg-blue-600 text-black px-3 py-2 rounded"
+          onClick={handleNewBusinessClick}
+        >
+          NEW BUSINESS
+        </button>
+
+        <button
+          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded"
+          onClick={downloadCSV} // Trigger CSV download
+        >
+          Download CSV
+        </button>
       </div>
 
-      {/* Business Table */}
       <table className="w-full border-collapse border border-gray-300">
         <thead>
           <tr className="bg-gray-100">
             <th className="border border-gray-300 px-4 py-2">#ID</th>
-            <th className="border border-gray-300 px-4 py-2">Business name</th>
+            <th className="border border-gray-300 px-4 py-2">Business Name</th>
             <th className="border border-gray-300 px-4 py-2">Address</th>
-            <th className="border border-gray-300 px-4 py-2">GST NO</th>
-            <th className="border border-gray-300 px-4 py-2">Start date</th>
-            <th className="border border-gray-300 px-4 py-2">renewal date</th>
+            <th className="border border-gray-300 px-4 py-2">GST No</th>
+            <th className="border border-gray-300 px-4 py-2">Start Date</th>
+            <th className="border border-gray-300 px-4 py-2">Renewal Date</th>
             <th className="border border-gray-300 px-4 py-2">AMC</th>
             <th className="border border-gray-300 px-4 py-2">Status</th>
             <th className="border border-gray-300 px-4 py-2">Action</th>
           </tr>
         </thead>
         <tbody>
-          {businesses.map((business) => (
-            <tr key={business.id}>
+          {filteredBusinesses.length > 0 ? handleFilterChange().map((business) => (
+            <tr
+              key={business.id}
+              onClick={() => handleRowClick(business)} // Make the whole row clickable
+              className="cursor-pointer hover:bg-gray-200"
+            >
               <td className="border border-gray-300 px-4 py-2">{business.id}</td>
-              <td className="border border-gray-300 px-4 py-2">{business.name}</td>
+              <td className="border border-gray-300 px-4 py-2">{business.businessName}</td>
               <td className="border border-gray-300 px-4 py-2">{business.address}</td>
               <td className="border border-gray-300 px-4 py-2">{business.gstNo}</td>
               <td className="border border-gray-300 px-4 py-2">{business.startDate}</td>
               <td className="border border-gray-300 px-4 py-2">{business.renewalDate}</td>
               <td className="border border-gray-300 px-4 py-2">{business.amc}</td>
               <td className="border border-gray-300 px-4 py-2">
-                <div className={`w-6 h-6 rounded-full ${business.status ? 'bg-green-500' : 'bg-red-500'}`}></div> {/* Status indicator */}
+                {business.status === 'Active' ? (
+                  <CheckCircle className="text-green-500" />
+                ) : (
+                  <Cancel className="text-red-500" />
+                )}
               </td>
-              <td className="border border-gray-300 px-4 py-2">E. V. SLA</td>
+              <td className="border border-gray-300 px-4 py-2">
+                <button
+                  className=""
+                  onClick={() => handleRowClick(business)}
+                >
+                  View 
+                </button>
+              </td>
             </tr>
-          ))}
+          )) : <tr><td colSpan="9" className="text-center">No businesses found</td></tr>}
         </tbody>
       </table>
-
-      <div className="flex mt-4">
-        <div className="bg-yellow-200 p-2 rounded-md">
-            <p>#PRI283737</p>
-            <p>File Data System</p>
-            <p>1. Save File</p>
-            <p>2. Send File</p>
-            <p>3. Delete File</p>
-        </div>
-        <div className="bg-yellow-200 p-2 rounded-md ml-auto">
-            {codeWordNotes.map((note, index) => (
-                <p key={index}>{note}</p>
-            ))}
-        </div>
-      </div>
-
-       <div className="mt-4">
-        <div className="bg-yellow-300 p-2 rounded-md inline-block">Ratan Lodhi</div>
-       </div>
     </div>
   );
 };

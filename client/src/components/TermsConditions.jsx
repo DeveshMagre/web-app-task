@@ -60,11 +60,7 @@ const TermsConditions = () => {
                 <td className="px-4 py-2">{contract.name}</td>
                 <td className="px-4 py-2">{contract.type}</td>
                 <td className="px-4 py-2">{contract.valid}</td>
-                <td className="px-4 py-2 text-center"> {/* Center the icons */}
-                  <span className="text-green-500 hover:text-green-700 mx-1 cursor-pointer">E</span> {/* Example Edit Icon */}
-                  <span className="text-blue-500 hover:text-blue-700 mx-1 cursor-pointer">V</span> {/* Example View Icon */}
-                  <span className="text-red-500 hover:text-red-700 mx-1 cursor-pointer">D</span> {/* Example Delete Icon */}
-                </td>
+                  
               </tr>
             ))}
             {contracts.length === 0 && (

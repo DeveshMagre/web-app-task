@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const UpdateProfile = () => {
   const [formData, setFormData] = useState({
@@ -7,6 +8,8 @@ const UpdateProfile = () => {
     phone: "",
     password: "",
   });
+
+  const navigate = useNavigate(); // Hook for navigation
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,12 +23,12 @@ const UpdateProfile = () => {
     e.preventDefault();
     console.log("Updated Profile Data:", formData);
     alert("Profile updated successfully!");
-    // Add backend integration logic here
+    navigate("/profile"); // Navigate to profile page
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-800">
-      <div className="bg-gray-700 p-6 rounded-lg shadow-lg w-full max-w-md">
+    <div className="flex justify-center items-center min-h-screen px-4">
+      <div className=" p-6 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center text-blue-400">
           Update Profile
         </h2>
@@ -34,7 +37,7 @@ const UpdateProfile = () => {
           <div>
             <label
               htmlFor="username"
-              className="block text-sm font-medium mb-1 text-gray-200"
+              className="block text-sm font-medium mb-1 text-gray-600"
             >
               Username
             </label>
@@ -45,7 +48,7 @@ const UpdateProfile = () => {
               value={formData.username}
               onChange={handleChange}
               placeholder="Enter your username"
-              className="w-full px-4 py-2 border border-gray-600 rounded bg-gray-800 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-2 border border-gray-600 rounded  text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
           </div>
@@ -54,7 +57,7 @@ const UpdateProfile = () => {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium mb-1 text-gray-200"
+              className="block text-sm font-medium mb-1 text-gray-600"
             >
               Email
             </label>
@@ -65,7 +68,7 @@ const UpdateProfile = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter your email"
-              className="w-full px-4 py-2 border border-gray-600 rounded bg-gray-800 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-2 border  rounded  border-gray-600 text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
           </div>
@@ -74,7 +77,7 @@ const UpdateProfile = () => {
           <div>
             <label
               htmlFor="phone"
-              className="block text-sm font-medium mb-1 text-gray-200"
+              className="block text-sm font-medium mb-1 text-gray-600"
             >
               Phone
             </label>
@@ -85,7 +88,7 @@ const UpdateProfile = () => {
               value={formData.phone}
               onChange={handleChange}
               placeholder="Enter your phone number"
-              className="w-full px-4 py-2 border border-gray-600 rounded bg-gray-800 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-2 border border-gray-600 rounded  text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
           </div>
@@ -94,7 +97,7 @@ const UpdateProfile = () => {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium mb-1 text-gray-200"
+              className="block text-sm font-medium mb-1 text-gray-600"
             >
               Password
             </label>
@@ -105,7 +108,7 @@ const UpdateProfile = () => {
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter a new password"
-              className="w-full px-4 py-2 border border-gray-600 rounded bg-gray-800 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-2 border border-gray-600 rounded text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
           </div>
@@ -113,7 +116,7 @@ const UpdateProfile = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-500 text-gray-100 py-2 rounded hover:bg-blue-600"
+            className="w-full bg-blue-500 text-gray-100 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
           >
             Save Changes
           </button>

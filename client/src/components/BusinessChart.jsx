@@ -12,13 +12,29 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const BusinessChart = () => {
-  const data = {
-    labels: ["April", "May", "June", "July", "Bill"],
+const BusinessChart = ({ submittedDates }) => {
+  const allData = [
+    { label: "April", value: 30, date: "2024-04-01" },
+    { label: "May", value: 40, date: "2024-05-01" },
+    { label: "June", value: 50, date: "2024-06-01" },
+    { label: "July", value: 60, date: "2024-07-01" },
+    { label: "August", value: 70, date: "2024-08-01" },
+  ];
+
+  const filteredData = submittedDates
+    ? allData.filter(
+        (data) =>
+          new Date(data.date) >= new Date(submittedDates.start) &&
+          new Date(data.date) <= new Date(submittedDates.end)
+      )
+    : allData;
+
+  const chartData = {
+    labels: filteredData.map((d) => d.label),
     datasets: [
       {
-        label: "Series 1",
-        data: [30, 40, 50, 60, 70],
+        label: "Business Growth",
+        data: filteredData.map((d) => d.value),
         backgroundColor: "rgba(54, 162, 235, 0.6)",
         borderColor: "rgba(54, 162, 235, 1)",
         borderWidth: 1,
@@ -35,7 +51,7 @@ const BusinessChart = () => {
     },
   };
 
-  return <Bar data={data} options={options} />;
+  return <Bar data={chartData} options={options} />;
 };
 
 export default BusinessChart;
