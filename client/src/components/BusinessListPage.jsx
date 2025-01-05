@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { useBusiness } from '../context/BusinessContext'; 
+import React, { useState, useEffect } from 'react';
+import { useBusiness } from '../context/BusinessContext';
 import { CSVLink } from "react-csv";
 
 const BusinessListPage = () => {
   const {
-    businesses, 
-    filteredBusinesses,
+    businesses,
     setNameSearchTerm,
     setPhoneSearchTerm,
     setGstSearchTerm,
-    setAmcSearchTerm,
-    setStatusSearchTerm,
-    addBusiness
+    addBusiness,
+    nameSearchTerm,
+    phoneSearchTerm,
+    gstSearchTerm
   } = useBusiness();
 
   const [selectedBusiness, setSelectedBusiness] = useState(null);
@@ -22,6 +22,20 @@ const BusinessListPage = () => {
   
   const [activationKey, setActivationKey] = useState('');
   const [licenseKey, setLicenseKey] = useState('');
+
+  const [filteredBusinesses, setFilteredBusinesses] = useState(businesses);
+
+  // Filter businesses whenever search terms or businesses change
+  useEffect(() => {
+    const filtered = businesses.filter(business => {
+      return (
+        business.businessName?.toLowerCase().includes(nameSearchTerm?.toLowerCase() || '') &&
+        business.phone?.includes(phoneSearchTerm || '') &&
+        business.gstNo?.includes(gstSearchTerm || '')
+      );
+    });
+    setFilteredBusinesses(filtered);
+  }, [businesses, nameSearchTerm, phoneSearchTerm, gstSearchTerm]);
 
   const handleGenerateKey = () => {
     if (!selectedBusiness || !selectedPlan || !duration || !amount || !amcCharges) {
@@ -48,9 +62,7 @@ const BusinessListPage = () => {
         : business
     );
 
-
     addBusiness(updatedBusinesses); 
-
 
     alert(`Activation Key: ${newActivationKey}\nLicense Key: ${newLicenseKey}`);
   };
@@ -66,7 +78,14 @@ const BusinessListPage = () => {
             onChange={(e) => setNameSearchTerm(e.target.value)}
           />
           <input
-            type="date"
+            type="text"
+            placeholder="Search by Phone"
+            className="border p-2 rounded w-1/4"
+            onChange={(e) => setPhoneSearchTerm(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Search by GST No"
             className="border p-2 rounded w-1/4"
             onChange={(e) => setGstSearchTerm(e.target.value)}
           />
@@ -82,6 +101,7 @@ const BusinessListPage = () => {
       </div>
 
       <div className="flex">
+        {/* Business selection section */}
         <div className="w-1/4 bg-white shadow-lg rounded-lg p-4 mr-4">
           <div className="mb-4">
             <label htmlFor="selectBusiness" className="block text-gray-700 text-sm font-bold mb-2">Select Business</label>
@@ -96,6 +116,7 @@ const BusinessListPage = () => {
               ))}
             </select>
           </div>
+
           <div className="mb-4">
             <label htmlFor="selectPlan" className="block text-gray-700 text-sm font-bold mb-2">Select Plan</label>
             <select id="selectPlan" className="border p-2 rounded w-full" onChange={(e) => setSelectedPlan(e.target.value)}>
@@ -133,6 +154,7 @@ const BusinessListPage = () => {
           </button>
         </div>
 
+        {/* Table section */}
         <div className="w-3/4 bg-white shadow-lg rounded-lg p-4 overflow-x-auto">
           <table className="min-w-full border-collapse border border-gray-300">
             <thead>

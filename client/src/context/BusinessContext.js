@@ -2,127 +2,78 @@ import React, { createContext, useState, useContext } from 'react';
 
 const BusinessContext = createContext();
 
+export const useBusiness = () => {
+  return useContext(BusinessContext);
+};
+
 export const BusinessProvider = ({ children }) => {
-  const [businesses, setBusinesses] = useState([
+  const defaultBusinesses = [
     {
-      id: 1,
-      businessName: 'ABC Pvt Ltd',
-      address: '123 Main St, City, Country',
-      gstNo: 'ABC123456789',
-      businessType: 'Manufacturing',
-      logo: 'path/to/logo.jpg',
-      invoiceNo: 'INV12345',
-      activationDate: '2020-01-01',
-      renewalDate: '2023-01-01',
-      key: 'ABCD1234',
-      licKey: 'LIC1234',
-      contactPerson: 'John Doe',
-      designation: 'Manager',
-      email: 'johndoe@abc.com',
-      phone: '9876543210',
-      businessDocs: 'path/to/business-docs.pdf',
-      gstDoc: 'path/to/gst-doc.pdf',
-      wdraOrderNo: 'WDRA1234',
-      startDate: '2020-01-01',  // Added Start Date
-      renewalDate: '2023-01-01',  // Added Renewal Date
-      amc: '12 months',  // Added AMC
-      status: 'Active',  // Added Status
+      id: "PRI2401012345",
+      businessName: "John's Bakery",
+      address1: "123 Main St, Springfield",
+      gstNo: "GST123456789",
+      startDate: "2024-01-01",
+      renewalDate: "2025-01-01",
+      amc: "Basic",
+      status: "Active",
+      phone: "9876543210",
+      email: "johnsbakery@example.com",
+      ownerName: "John Doe",
+      city: "Springfield",
     },
     {
-      id: 2,
-      businessName: 'Devesh Pvt Ltd',
-      address: '123 Main St, City, Country',
-      gstNo: 'ABC123456789',
-      businessType: 'Manufacturing',
-      logo: 'path/to/logo.jpg',
-      invoiceNo: 'INV12345',
-      activationDate: '2020-01-01',
-      renewalDate: '2023-01-01',
-      key: 'ABCD1234',
-      licKey: 'LIC1234',
-      contactPerson: 'John Doe',
-      designation: 'Manager',
-      email: 'johndoe@abc.com',
-      phone: '9876543210',
-      businessDocs: 'path/to/business-docs.pdf',
-      gstDoc: 'path/to/gst-doc.pdf',
-      wdraOrderNo: 'WDRA1234',
-      startDate: '2020-01-01',  // Added Start Date
-      renewalDate: '2023-01-01',  // Added Renewal Date
-      amc: '12 months',  // Added AMC
-      status: 'Active',  // Added Status
+      id: "PRI2401023456",
+      businessName: "Tech Solutions",
+      address1: "456 Elm St, Metropolis",
+      gstNo: "GST987654321",
+      startDate: "2024-02-01",
+      renewalDate: "2025-02-01",
+      amc: "Premium",
+      status: "Active",
+      phone: "9123456789",
+      email: "techsolutions@example.com",
+      ownerName: "Jane Smith",
+      city: "Metropolis",
     },
-  ]);
+  ];
 
-  const [filteredBusinesses, setFilteredBusinesses] = useState(businesses);
-
-  // Set search terms
+  const [businesses, setBusinesses] = useState(defaultBusinesses);
   const [nameSearchTerm, setNameSearchTerm] = useState('');
   const [phoneSearchTerm, setPhoneSearchTerm] = useState('');
   const [gstSearchTerm, setGstSearchTerm] = useState('');
-  const [amcSearchTerm, setAmcSearchTerm] = useState('');  // Added AMC search term
-  const [statusSearchTerm, setStatusSearchTerm] = useState('');  // Added Status search term
 
-  // Function to filter businesses
-  const filterBusinesses = () => {
-    const filtered = businesses.filter((business) => {
-      const matchesName = nameSearchTerm
-        ? business.businessName.toLowerCase().includes(nameSearchTerm.toLowerCase())
-        : true;
-      const matchesPhone = phoneSearchTerm
-        ? business.phone.includes(phoneSearchTerm)
-        : true;
-      const matchesGst = gstSearchTerm
-        ? business.gstNo.includes(gstSearchTerm)
-        : true;
-      const matchesAmc = amcSearchTerm
-        ? business.amc.toLowerCase().includes(amcSearchTerm.toLowerCase())
-        : true;
-      const matchesStatus = statusSearchTerm
-        ? business.status.toLowerCase().includes(statusSearchTerm.toLowerCase())
-        : true;
-
-      return matchesName && matchesPhone && matchesGst && matchesAmc && matchesStatus;
-    });
-
-    setFilteredBusinesses(filtered);
+  // Add a new business with all specified fields
+  const addBusiness = (newBusiness) => {
+    const businessWithId = {
+      ...newBusiness,
+      id: generateBusinessID(),
+    };
+    setBusinesses([...businesses, businessWithId]);
   };
 
-  // Watch for search term changes and reapply filters
-  React.useEffect(() => {
-    filterBusinesses();
-  }, [nameSearchTerm, phoneSearchTerm, gstSearchTerm, amcSearchTerm, statusSearchTerm]);
+  const generateBusinessID = () => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+    const randomNumber = Math.floor(1000 + Math.random() * 9000);
 
-  // Function to add a new business
-  const addBusiness = (businessData) => {
-    setBusinesses((prevBusinesses) => [
-      ...prevBusinesses,
-      { id: Date.now(), ...businessData },
-    ]);
+    const businessID = `PRI${year.toString().slice(-2)}${month}${randomNumber}`;
+    return businessID;
   };
 
   return (
     <BusinessContext.Provider
       value={{
         businesses,
-        filteredBusinesses,
-        filterBusinesses,
+        addBusiness,
         setNameSearchTerm,
         setPhoneSearchTerm,
         setGstSearchTerm,
-        setAmcSearchTerm,  // Provide AMC search setter
-        setStatusSearchTerm,  // Provide Status search setter
-        addBusiness,
+        generateBusinessID,
       }}
     >
       {children}
     </BusinessContext.Provider>
   );
 };
-
-// Custom Hook to use business context
-export const useBusiness = () => {
-  return useContext(BusinessContext);
-};
-
-export default BusinessContext;

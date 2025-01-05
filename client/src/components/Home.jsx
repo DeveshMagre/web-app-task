@@ -1,11 +1,27 @@
 import React, { useState } from "react";
 import BusinessChart from "./BusinessChart"; 
 import { format } from "date-fns";
-
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 const Home = () => {
   const [validityStart, setValidityStart] = useState("");
   const [validityEnd, setValidityEnd] = useState("");
   const [submittedDates, setSubmittedDates] = useState(null);
+
+  const navigate = useNavigate();
+
+  const userValid = () => {
+    let token = localStorage.getItem("userdbtoken");
+    if (token) {
+      console.log("user valid")
+    } else {
+      navigate("*")
+    }
+  }
+
+  useEffect(() => {
+    userValid();
+  }, [])
 
   const handleDateSubmit = () => {
     if (validityStart && validityEnd) {

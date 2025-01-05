@@ -17,7 +17,6 @@ const Navbar = () => {
         <Link to="/">LOGO</Link>
       </div>
       <div className="container mx-auto flex justify-between items-center py-4 px-6">
-        {/* Desktop Links */}
         <div className="hidden md:flex space-x-10">
           <Link
             to="/business"
@@ -45,7 +44,6 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {/* Profile or Logout Button */}
         <div className="hidden md:flex">
           {isProfileRoute ? (
             <button
@@ -64,7 +62,6 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Hamburger Menu Icon */}
         <div className="md:hidden flex items-center">
           <button
             onClick={toggleMenu}
@@ -105,7 +102,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="md:hidden bg-gradient-to-b from-blue-700 to-blue-900 relative">
           <div className="flex flex-col space-y-6 px-6 py-4">
@@ -138,8 +134,6 @@ const Navbar = () => {
               Pricing
             </Link>
           </div>
-
-          {/* Profile Button in Top Right Corner */}
           <div className="absolute top-4 right-4">
             {isProfileRoute ? (
               <button

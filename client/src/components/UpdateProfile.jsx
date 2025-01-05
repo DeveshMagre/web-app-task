@@ -9,7 +9,7 @@ const UpdateProfile = () => {
     password: "",
   });
 
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,7 +33,6 @@ const UpdateProfile = () => {
           Update Profile
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Username */}
           <div>
             <label
               htmlFor="username"

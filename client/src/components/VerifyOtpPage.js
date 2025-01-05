@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -9,9 +9,9 @@ const VerifyOtpPage = () => {
   const [timer, setTimer] = useState(30);
   const [isResendDisabled, setIsResendDisabled] = useState(true);
   const location = useLocation();
-  const email = location.state?.email || ""; // Ensure email is present
+  const navigate = useNavigate();
+  const email = location.state?.email || ""; 
 
-  // Start the timer when the component is mounted
   useEffect(() => {
     let countdown;
     if (timer > 0) {
@@ -22,7 +22,6 @@ const VerifyOtpPage = () => {
     return () => clearInterval(countdown);
   }, [timer]);
 
-  // Handle OTP verification
   const handleVerifyOtp = async () => {
     if (!otp) {
       toast.error("Please enter the OTP");
@@ -32,7 +31,9 @@ const VerifyOtpPage = () => {
     try {
       const response = await axios.post("http://localhost:5000/verify-otp", { email, otp });
       if (response.data.success) {
-        toast.success("OTP verified! Login successful.");
+        toast.success("OTP verified! Email successfully verified.");
+        // Mark email as verified and redirect to the desired page
+        navigate("/dashboard"); // Replace with your desired route
       } else {
         toast.error(response.data.message || "Invalid OTP");
       }
@@ -41,7 +42,6 @@ const VerifyOtpPage = () => {
     }
   };
 
-  // Handle Resend OTP
   const handleResendOtp = async () => {
     setIsResendDisabled(true);
     setTimer(30);
